@@ -2,6 +2,7 @@ import os
 import sys
 from itertools import cycle
 
+# Discord setup
 try:
     import discord
     from discord.ext import commands, tasks
@@ -10,27 +11,47 @@ except ImportError:
     sys.exit(1)
 
 # Ensure correct Discord.py version
-if discord.__version__ != '1.3.4':
+if discord.__version__ != '1.5.1':
     print(f'Discord.py version: {discord.__version__}.\n'
-          'Please install version 1.3.4', file=sys.stderr)
+          'Please install version 1.5.1', file=sys.stderr)
     sys.exit(1)
+
+intents = discord.Intents.default()
+intents.members = True
+intents.integrations = False
+intents.webhooks = False
+intents.invites = False
+intents.voice_states = False
+intents.typing = False
 
 bot = commands.Bot(
     command_prefix='!',
-    case_insensitive=True)
+    case_insensitive=True,
+    intents=intents)
 bot.remove_command('help')
+
+# Database
+try:
+    import psycopg2
+except ImportError:
+    print('psycopg2 is not installed', file=sys.stderr)
+    sys.exit(1)
+
+DATABASE_URL = os.environ.get('DATABASE_URL')
+conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+db = conn.cursor()
+
 
 extensions = [
     'actionlog',   # Action-log channel functionality
     'characters',  # Mentor and hitbox commands
     'info',        # Help, links, and informational commands
     'moderation',  # Moderation commands
-    'owner',       # Bot upkeep commands
     'roles',       # Role request commands and reaction system
 ]
 
 statuses = {
-    'update_note': 'Updating to 1.4.19 soon!',
+    'update_note': 'Currently updating to definitive',
     'academy_link': 'discord.me/mentor',
     'usage_stats': ''  # To be updated in loop
 }
