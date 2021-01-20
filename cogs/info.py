@@ -19,8 +19,8 @@ class Info(commands.Cog):
                  'hitstunformula', 'knockbackformula'],
             'Videos & Clips':
                 ['AAAA', 'babydashing', 'bairhitfall', 'pwjpecotr'],
-            'Mentorbot':
-                ['about', 'help'],
+            'Mentorbot/Misc.':
+                ['about', 'help', 'replays'],
             'Beefy Aether Doods':
                 ['cactuardashing', 'DI', 'horizontalwaveland', 'ledgecancel','RAR',
                  'teching', 'wavedashing'],
@@ -49,7 +49,8 @@ class Info(commands.Cog):
             '6 - Horizontal knockback sends away from the enemy player\n'
             '7 - Horizontal knockback sends toward the enemy player\n'
             '8 - Sends away from the center of the hitbox\n'
-            '9 - Hits toward the center of the hitbox```')
+            '9 - Hits toward the center of the hitbox\n'
+            '10 - Sends in the direction the player is moving```')
         embed = discord.Embed(title='Angle Flipper Definitions', description=definitions)
         await ctx.send(embed=embed)
 
@@ -159,7 +160,7 @@ class Info(commands.Cog):
         await ctx.send('https://twitter.com/notMSB/status/1025537436565364738')
 
     # Mentorbot
-    @commands.command(name='about', aliases=['info', 'information'], hidden=True)
+    @commands.command(name='about', aliases=['info', 'information', 'invite'], hidden=True)
     async def info_command(self, ctx):
         """Display information about Mentorbot."""
         embed = discord.Embed(
@@ -191,6 +192,23 @@ class Info(commands.Cog):
             value='Multiple character and move names are supported, try it out!')
         embed.set_image(url='https://i.imgur.com/nHBfPyL.png')
         embed.set_footer(text='For non-hitbox commands, try !commands.')
+        await ctx.send(embed=embed)
+
+    @commands.command(name='replays')
+    async def how_to_access_your_replays(self, ctx, *arg):
+        """Display instructions to access your RoA replays."""
+        embed = discord.Embed()
+        embed.set_author(name='How to Access Your Replays', icon_url=self.bot.user.avatar_url)
+        embed.add_field(
+            name='Method 1:',
+            value='1. Press `Win + R`\n' 
+                  '2. Put in the following: ```%LocalAppData%\\RivalsOfAether\\replays```',
+            inline=False)
+        embed.add_field(
+            name='Method 2:',
+            value='1. Make sure "Hidden items" are shown in File Explorer\n'
+                  '2. Go to: ```C:\\Users\\yourname\\AppData\\Local\\RivalsofAether\\replays```',
+            inline=False)
         await ctx.send(embed=embed)
 
     # Beefy Aether Doods
@@ -294,12 +312,12 @@ class Info(commands.Cog):
                 '19UtK7xG2c-ehxdlhCFKMpM4_IHSG-EXFgXLJaunE79I')
         embed = discord.Embed(
             url=link,
-            title='Rivals of Aether Academy Frame Data - Updated for 1.4.21',
+            title='Rivals of Aether Academy Frame Data - Updated for 1.4.25',
             description='Data extracted manually in-game and from dev-mode files by SNC. '
                         'Extra information provided by Menace13 and Youngblood. '
                         'General Stats created by Kisuno. '
                         'Collated Patch Notes created by SNC.')
-        embed.set_thumbnail(url='https://i.imgur.com/1KB00gd.png')
+        embed.set_thumbnail(url='https://i.imgur.com/NCdvqoG.png')
         await ctx.send(content=link, embed=embed)
 
     @commands.command(name='hurtboxdata', aliases=['hurtboxes'])
