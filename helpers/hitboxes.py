@@ -5,65 +5,97 @@ from discord.ext import commands
 from tabulate import tabulate
 
 from helpers import helpers
+from data.rivals import absa, absa_template
+import re
 
+def get_data(character, use, match):
+    print("attempting to resolve " + use + "." + match.group(1))
+    tree = (use + "." + match.group(1)).split('.')
+    data = character
+    for item in tree:
+        data = data[item]
+
+    print("resolved to " + str(data))
+    return str(data)
+
+
+def resolve_template(character, use, template):
+    return re.sub("\\${(.*?)}", lambda match: get_data(character, use, match), template)
 
 async def move_info(ctx, cursor, character, move):
     """Display frame data and hitbox info of move given."""
     # Get character info
-    character_info = helpers.character_info(cursor, character=character)
-    # Get move ID and display name
-    move = cursor.execute(
-        '''SELECT id, display_name FROM moves WHERE name1 = :move OR name2 = :move
-           OR name3 = :move OR name4 = :move OR name5 = :move OR name6 = :move''', 
-           {'move': move}).fetchone()
-    # Get move info
-    move_info = cursor.execute(
-        '''SELECT * FROM hitboxes WHERE char_id = :char_id AND move_id = :move_id''',
-        {'char_id': character_info['id'], 'move_id': move['id']}).fetchall()
-    # Add move info to embed
-    columns = {
-        'Cost': 'cost',
-        'Startup': 'startup',
-        'Active': 'active',
-        'Intangible': 'intangible',
-        'Invulnerable': 'invulnerable',
-        'Armored': 'armored',
-        'Endlag': 'endlag',
-        'Endlag (Hit)': 'endlag_hit',
-        'Endlag (Whiff)': 'endlag_whiff',
-        'Landing Lag (Hit)': 'landing_lag_hit',
-        'Landing Lag (Whiff)': 'landing_lag_whiff',
-        'FAF': 'faf',
-        'Cooldown': 'cooldown',
-        'Damage': 'damage',
-        'Sourspot Damage': 'sourspot_damage',
-        'Sweetspot Damage': 'sweetspot_damage',
-        'Tipper Damage': 'tipper_damage',
-        # For hurtbox commands
-        'Height': 'height',
-        'Width': 'width',
-    }
-    move_display = ''
-    for row in move_info:
-        # Each column may or may not exist
-        hit_info = [[display_name, row[column]]
-                   for display_name, column in columns.items() if row[column]]
-        # Certain tables will not have a hit identifier above them
-        if row['hit']:
-            move_display += f"\n**{row['hit']}**"
-        # Add table of hit info
-        move_display += (
-            '```ml\n'
-            f"{tabulate(hit_info, tablefmt='presto')}\n".replace('\n ', '\n'))  # Strip left-hand whitespace
-        if row['notes']:
-            move_display += row['notes']
-        move_display += '```'
+    print('printing move ' + move + ' for character ' + character)
+    # original_move = move
+
+    shortened_move = move.replace()
+
+    # character_info = helpers.character_info(cursor, character=character)
+    # # Get move ID and display name
+    # move = cursor.execute(
+    #     '''SELECT id, display_name FROM moves WHERE name1 = :move OR name2 = :move
+    #        OR name3 = :move OR name4 = :move OR name5 = :move OR name6 = :move''',
+    #        {'move': move}).fetchone()
+    # # Get move info
+    # move_info = cursor.execute(
+    #     '''SELECT * FROM hitboxes WHERE char_id = :char_id AND move_id = :move_id''',
+    #     {'char_id': character_info['id'], 'move_id': move['id']}).fetchall()
+    # # Add move info to embed
+    # columns = {
+    #     'Cost': 'cost',
+    #     'Startup': 'startup',
+    #     'Active': 'active',
+    #     'Intangible': 'intangible',
+    #     'Invulnerable': 'invulnerable',
+    #     'Armored': 'armored',
+    #     'Endlag': 'endlag',
+    #     'Endlag (Hit)': 'endlag_hit',
+    #     'Endlag (Whiff)': 'endlag_whiff',
+    #     'Landing Lag (Hit)': 'landing_lag_hit',
+    #     'Landing Lag (Whiff)': 'landing_lag_whiff',
+    #     'FAF': 'faf',
+    #     'Cooldown': 'cooldown',
+    #     'Damage': 'damage',
+    #     'Sourspot Damage': 'sourspot_damage',
+    #     'Sweetspot Damage': 'sweetspot_damage',
+    #     'Tipper Damage': 'tipper_damage',
+    #     # For hurtbox commands
+    #     'Height': 'height',
+    #     'Width': 'width',
+    # }
+    # move_display = ''
+    # for row in move_info:
+    #     # Each column may or may not exist
+    #     hit_info = [[display_name, row[column]]
+    #                for display_name, column in columns.items() if row[column]]
+    #     # Certain tables will not have a hit identifier above them
+    #     if row['hit']:
+    #         move_display += f"\n**{row['hit']}**"
+    #     # Add table of hit info
+    #     move_display += (
+    #         '```ml\n'
+    #         f"{tabulate(hit_info, tablefmt='presto')}\n".replace('\n ', '\n'))  # Strip left-hand whitespace
+    #     if row['notes']:
+    #         move_display += row['notes']
+    #     move_display += '```'
+
+    if character == 'Absa' and original_move == 'utilt':
+        print('printing out utilt!')
+        print(move_display)
+        print("absa utilt startup template is " + absa_template['utilt']['table']['Startup'])
+        print("absa utilt startup is " + resolve_template(absa, absa_template['utilt']['use'], absa_template['utilt']['table']['Startup']))
+
+
     embed = discord.Embed(color=character_info['color'], description=move_display)
     embed.set_author(name=f"{character} {move['display_name']}",
                      icon_url=character_info['icon'])
     # Some moves may be missing an image
-    if move_info[0]['image']:
-        embed.set_image(url=move_info[0]['image'])
+    # if move_info[0]['image']:
+    #     if character == 'Absa' and original_move == 'utilt':
+    #         print("Setting image!")
+    #         embed.set_image(url="")
+    #     else:
+    #         embed.set_image(url=move_info[0]['image'])
     # Display different footer for hitbox/hurtbox commands
     if move['id'] == 0:
         more_info_command = '!hurtboxdata'
@@ -73,12 +105,12 @@ async def move_info(ctx, cursor, character, move):
     # Send move info
     await ctx.send(embed=embed)
     # Send additional info message for Clairen Plasma Field
-    if character_info['name'] == 'Clairen' and move['id'] == 17:
-        embed = discord.Embed(
-            url='https://docs.google.com/document/d/'
-                '12I3L4w27sHRZc139FJYtZkkAbjE6CcdpfHAFzfsKkQM',
-            color=character_info['color'],
-            title='Clairen Plasma Field Interactions',
-            description="General projectile interactions with Clairen's Plasma Field")
-        embed.set_thumbnail(url='https://i.imgur.com/5NVvUtj.png')
-        await ctx.send(embed=embed)
+    # if character_info['name'] == 'Clairen' and move['id'] == 17:
+    #     embed = discord.Embed(
+    #         url='https://docs.google.com/document/d/'
+    #             '12I3L4w27sHRZc139FJYtZkkAbjE6CcdpfHAFzfsKkQM',
+    #         color=character_info['color'],
+    #         title='Clairen Plasma Field Interactions',
+    #         description="General projectile interactions with Clairen's Plasma Field")
+    #     embed.set_thumbnail(url='https://i.imgur.com/5NVvUtj.png')
+    #     await ctx.send(embed=embed)

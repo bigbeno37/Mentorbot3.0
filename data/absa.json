@@ -1,0 +1,14 @@
+{
+  "utilt": {
+    "use": "up.tilt",
+    "table": {
+      "Startup": "{hit1.startup}",
+      "Active": "(Center / Above) {hit1.active.from}-{hit1.active.to}, (Late) {hit3.active.from}-{hit3.active.to}",
+      "Endlag (Hit)": "{hit3.endlag.hit}",
+      "Endlag (Whiff)": "{hit3.endlag.whiff}",
+      "FAF": "{hit3.FAF}",
+      "Damage": "(Center / Above) {hit1.damage}%, (Late) {hit3.damage}%"
+    },
+    "image": "https://i.imgur.com/zHZ9l90.png"
+  }
+}

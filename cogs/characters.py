@@ -7,7 +7,7 @@ from discord.ext import commands
 from data import rivals
 from helpers import helpers, hitboxes, mentors
 
-db = sqlite3.connect('data/academy.db')
+db = sqlite3.connect('/src/data/academy.db')
 db.row_factory = sqlite3.Row
 cursor = db.cursor()
 

@@ -38,7 +38,7 @@ except ImportError:
     sys.exit(1)
 
 DATABASE_URL = os.environ.get('DATABASE_URL')
-conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+conn = psycopg2.connect(DATABASE_URL)
 db = conn.cursor()
 
 

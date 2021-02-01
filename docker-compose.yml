@@ -1,0 +1,18 @@
+version: "3.9"
+services:
+  bot:
+    build: .
+    depends_on:
+      - db
+    volumes:
+      - ./:/src/
+    command: python -u /src/bot.py
+    environment:
+      DATABASE_URL: dbname=postgres user=postgres password=password host=db
+      TOKEN: NzYzODcyNzI2OTg0ODE4NzM4.X3-B6g.h9sJNMd434XWwma4hq2bVXPElXs
+  db:
+    image: postgres
+    environment:
+      POSTGRES_PASSWORD: password
+    ports:
+      - 5432:5432
